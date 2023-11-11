@@ -1,0 +1,36 @@
+﻿@model IEnumerable<ContactViewModel>
+@*
+ 
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">MobilePhone</th>
+            <th scope="col">JobTitle</th>
+            <th scope="col">BirthDate</th>
+            <th><<a type="button" class="btn btn-primary" asp-controller="Contact" asp-action="Create">Create contacts</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var contact in Model)
+        {
+            <tr>
+                <th scope="row">@contact.Id</th>
+                <td>@contact.Name</td>
+                <td>@contact.MobilePhone</td>
+                <td>@contact.JobTitle</td>
+                <td>@contact.BirthDate.Date.ToString("MM/dd/yyyy")</td>
+                <td>
+                    <button type="button" class="btn btn-success">Edit</button>
+                    <button type="button" class="btn btn-danger delete-btn">Delete</button>
+                </td>
+            </tr>
+        }       
+    </tbody>
+</table>
