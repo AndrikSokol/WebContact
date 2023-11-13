@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ContactViewModel>
+﻿
+@model ContactViewModel
 @*
  
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,11 +15,15 @@
             <th scope="col">MobilePhone</th>
             <th scope="col">JobTitle</th>
             <th scope="col">BirthDate</th>
-            <th><<a type="button" class="btn btn-primary" asp-controller="Contact" asp-action="Create">Create contacts</a></th>
+            <th>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                    Create contact
+                </button>
+            </th>
         </tr>
     </thead>
     <tbody>
-        @foreach(var contact in Model)
+        @foreach(var contact in Model.Contacts)
         {
             <tr>
                 <th scope="row">@contact.Id</th>
@@ -27,10 +32,182 @@
                 <td>@contact.JobTitle</td>
                 <td>@contact.BirthDate.Date.ToString("MM/dd/yyyy")</td>
                 <td>
-                    <button type="button" class="btn btn-success">Edit</button>
-                    <button type="button" class="btn btn-danger delete-btn">Delete</button>
+                    <button type="button" class="btn btn-success" onclick="EditForm(@contact.Id)" id="editForm">Edit</button>
+                    <button type="button" class="btn btn-danger delete-btn" onclick="Confirm(@contact.Id)">Delete</button>
                 </td>
             </tr>
         }       
     </tbody>
+
+
 </table>
+
+<!-- Modal add -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">      
+            <form id="form-add"  method="post">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add contact</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label asp-for="Contact.Name" class="control-label"></label>
+                        <input asp-for="Contact.Name" class="form-control" />
+                        <span asp-validation-for="Contact.Name" class="text-danger"></span>
+                    </div>
+                       <div class="form-group">
+                        <label asp-for="Contact.MobilePhone" class="control-label"></label>
+                        <input asp-for="Contact.MobilePhone" class="form-control" />
+                        <span asp-validation-for="Contact.MobilePhone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Contact.JobTitle" class="control-label"></label>
+                        <input asp-for="Contact.JobTitle" class="form-control" />
+                        <span asp-validation-for="Contact.JobTitle" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Contact.BirthDate" class="control-label"></label>
+                        <input type="date" asp-for="Contact.BirthDate" class="form-control" />
+                        <span asp-validation-for="Contact.BirthDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="button-add" type="button" class="btn btn-primary">Add contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal delete-->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete contact</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h3>Are your sure to delete this contact?</h3>
+            </div>
+             <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="button-delete" type="button" class="btn btn-primary">Delete</button>
+            </div> 
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal edit -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit contact</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Update" id="form-edit" method="post">
+                    <input class="contactId" type="hidden" asp-for="Contact.Id" />
+                    <div class="form-group">
+                        <label asp-for="Contact.Name" class="control-label"></label>
+                        <input id="contact-name" asp-for="Contact.Name" class="form-control" />
+                        <span asp-validation-for="Contact.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Contact.MobilePhone" class="control-label"></label>
+                        <input id="contact-mobilePhone" asp-for="Contact.MobilePhone" class="form-control" />
+                        <span asp-validation-for="Contact.MobilePhone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Contact.JobTitle" class="control-label"></label>
+                        <input id="contact-jobTitle" asp-for="Contact.JobTitle" class="form-control" />
+                        <span asp-validation-for="Contact.JobTitle" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Contact.BirthDate" class="control-label"></label>
+                        <input id="contact-birthDate" type="date" asp-for="Contact.BirthDate" class="form-control" />
+                        <span asp-validation-for="Contact.BirthDate" class="text-danger"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="button-edit" type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+<input id="ContactId" type="hidden"/>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $("#button-add").click(function () {
+                var contactForm = $("#form-add").serialize();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Contact/Create",
+                    data: contactForm,
+                    success: function () {
+                        window.location.href = "/Contact/Index";
+                    }
+                });
+            });
+
+            $("#button-delete").click(function () {
+                var contactId = $("#ContactId").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Contact/Delete",
+                    data: { id: contactId },
+                    success: function (result) {
+                        if (result) {
+                            $("#ContactId").val(null);
+                            window.location.href = "/Contact/Index";
+                        } else {
+                            alert("Something gone wrong");
+                        }
+                    }
+                });
+            });
+        });
+
+        var Confirm = function (id) {
+            $("#ContactId").val(id);
+            $("#deleteModal").modal('show');
+        };
+
+        var EditForm = function (id) {
+            $.ajax({
+                type: "POST",
+                url: "/Contact/GetContact",
+                data: { id: id },
+                success: function (c) {
+                    $("#editModal").modal('show');
+                    $("#contact-name").val(c.name);
+                    $("#contact-mobilePhone").val(c.mobilePhone);
+                    $("#contact-jobTitle").val(c.jobTitle)
+                    ;
+                    var birthDate = new Date(c.birthDate);
+                    var formattedBirthDate = birthDate.toISOString().split('T')[0];
+                    $("#contact-birthDate").val(formattedBirthDate);
+
+                    $(".contactId").val(c.id)
+                }
+            });
+        };
+    </script>
+}

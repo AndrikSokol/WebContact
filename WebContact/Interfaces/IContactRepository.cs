@@ -4,12 +4,12 @@ namespace WebContact.Interfaces
 {
     public interface IContactRepository
     {
-        Task<IEnumerable<ContactViewModel>> GetAllAsync();
-        Task<ContactViewModel> GetByIdAsync(int id);
+        Task<IEnumerable<Contact>> GetAllAsync();
+        Task<Contact> GetByIdAsync(int id);
 
-        bool Add(ContactViewModel contact);
-        bool Update(ContactViewModel contact);
-        bool Delete(ContactViewModel contact);
+        bool Add(Contact contact);
+        bool Update(Contact contact);
+        bool Delete(Contact contact);
         
         bool Save();
 

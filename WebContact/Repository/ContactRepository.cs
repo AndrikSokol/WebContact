@@ -13,23 +13,23 @@ namespace WebContact.Repository
         {
             _context = context;
         }
-        public async Task<IEnumerable<ContactViewModel>> GetAllAsync()
+        public async Task<IEnumerable<Contact>> GetAllAsync()
         {
             return await _context.Contact.ToListAsync();
         }
 
-        public Task<ContactViewModel> GetByIdAsync(int id)
+        public Task<Contact> GetByIdAsync(int id)
         {
             return _context.Contact.FirstOrDefaultAsync(contact => contact.Id == id);
         }
 
-        public bool Add(ContactViewModel contact)
+        public bool Add(Contact contact)
         {
             _context.Add(contact);
             return Save();
         }
 
-        public bool Delete(ContactViewModel contact)
+        public bool Delete(Contact contact)
         {
             _context.Remove(contact);
             return Save();
@@ -43,7 +43,7 @@ namespace WebContact.Repository
             return saved>0 ? true : false;
         }
 
-        public bool Update(ContactViewModel contact)
+        public bool Update(Contact contact)
         {
             _context.Update(contact);
             return Save();

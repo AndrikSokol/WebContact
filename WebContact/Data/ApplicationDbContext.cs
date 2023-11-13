@@ -9,7 +9,6 @@ namespace WebContact.Data
         {
 
         }
-
-        public DbSet<ContactViewModel> Contact { get; set; }
+        public DbSet<Contact> Contact { get; set; }
     }
 }

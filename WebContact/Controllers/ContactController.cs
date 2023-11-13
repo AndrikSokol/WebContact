@@ -16,20 +16,47 @@ namespace WebContact.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            IEnumerable<ContactViewModel> contacts = await _contactRepository.GetAllAsync();
-            return View(contacts);
+            IEnumerable<Contact> contacts = await _contactRepository.GetAllAsync();
+            ContactViewModel contactViewModel = new ContactViewModel();
+            contactViewModel.Contacts = contacts;
+            return View(contactViewModel);
         }
 
-        public IActionResult Delete()
+        [HttpPost]
+        public IActionResult Create (ContactViewModel cvm) 
         {
-
-
-            return View();
+            _contactRepository.Add(cvm.Contact);
+            return RedirectToAction("Index");
         }
 
-        public IActionResult Create()
+        [HttpPost]
+        public async Task<IActionResult> Update(ContactViewModel cvm)
         {
-            return View();
+            Contact contact = await _contactRepository.GetByIdAsync(cvm.Contact.Id);
+            if(contact != null) 
+            {
+                contact.Name = cvm.Contact.Name;
+                contact.MobilePhone = cvm.Contact.MobilePhone;
+                contact.JobTitle = cvm.Contact.JobTitle;
+                contact.BirthDate = cvm.Contact.BirthDate;
+                _contactRepository.Update(contact);
+            }
+            return RedirectToAction("Index");
         }
+
+        public async Task<ActionResult> GetContact(int id)
+        {
+            Contact contact = await _contactRepository.GetByIdAsync(id);
+            return Json(contact);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            Contact contact = await _contactRepository.GetByIdAsync(id);
+            if(contact != null)
+                _contactRepository.Delete(contact);
+            return RedirectToAction("Index");
+        }
+
     }
 }
