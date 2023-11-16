@@ -12,6 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options=>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,5 +33,14 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Contact}/{action=Index}/{id?}");
+
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    context.Database.EnsureCreated();
+}
+
 
 app.Run();

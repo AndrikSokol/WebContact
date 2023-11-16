@@ -1,5 +1,4 @@
-﻿
-@model ContactViewModel
+﻿@model ContactViewModel
 @*
  
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -12,37 +11,38 @@
         <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
-            <th scope="col">MobilePhone</th>
-            <th scope="col">JobTitle</th>
-            <th scope="col">BirthDate</th>
+            <th scope="col">Mobile Phone</th>
+            <th scope="col">Job Title</th>
+            <th scope="col">Birth Date</th>
             <th>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
                     Create contact
-                </button>
+                </button>           
             </th>
         </tr>
     </thead>
     <tbody>
-        @foreach(var contact in Model.Contacts)
+        @for (int i=0;i<Model.Contacts.Count();i++)
         {
-            <tr>
-                <th scope="row">@contact.Id</th>
+            var contact = Model.Contacts.ElementAt(i);
+            <tr class="contact-row">
+                <th scope="row">@(i+1)</th>
                 <td>@contact.Name</td>
                 <td>@contact.MobilePhone</td>
                 <td>@contact.JobTitle</td>
-                <td>@contact.BirthDate.Date.ToString("MM/dd/yyyy")</td>
+                <td>@contact.BirthDate.Date.ToShortDateString()</td>
                 <td>
-                    <button type="button" class="btn btn-success" onclick="EditForm(@contact.Id)" id="editForm">Edit</button>
-                    <button type="button" class="btn btn-danger delete-btn" onclick="Confirm(@contact.Id)">Delete</button>
+                    <button type="button" class="btn btn-success" onclick="editForm(@contact.Id)" id="editForm">Edit</button>               
+                    <button type="button" class="btn btn-danger delete-btn" onclick="deleteField(@contact.Id)" >Delete</button>
                 </td>
             </tr>
-        }       
+        }
     </tbody>
 
 
 </table>
 
-<!-- Modal add -->
+ <!-- Modal add -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">      
@@ -52,55 +52,35 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="form-group row mb-3">
                         <label asp-for="Contact.Name" class="control-label"></label>
-                        <input asp-for="Contact.Name" class="form-control" />
-                        <span asp-validation-for="Contact.Name" class="text-danger"></span>
+                        <input asp-for="Contact.Name" class="form-control contact-name" />
+                        <span class="text-danger"></span>
                     </div>
-                       <div class="form-group">
+                    <div class="form-group row mb-3">
                         <label asp-for="Contact.MobilePhone" class="control-label"></label>
-                        <input asp-for="Contact.MobilePhone" class="form-control" />
-                        <span asp-validation-for="Contact.MobilePhone" class="text-danger"></span>
+                        <input asp-for="Contact.MobilePhone" class="form-control contact-phone" />
+                        <span class="text-danger"></span>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group row mb-3">
                         <label asp-for="Contact.JobTitle" class="control-label"></label>
-                        <input asp-for="Contact.JobTitle" class="form-control" />
-                        <span asp-validation-for="Contact.JobTitle" class="text-danger"></span>
+                        <input asp-for="Contact.JobTitle" class="form-control contact-job-title" />
+                        <span class="text-danger"></span>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group row mb-3">
                         <label asp-for="Contact.BirthDate" class="control-label"></label>
-                        <input type="date" asp-for="Contact.BirthDate" class="form-control" />
-                        <span asp-validation-for="Contact.BirthDate" class="text-danger"></span>
+                        <input type="date" asp-for="Contact.BirthDate" class="form-control contact-birth-date" />
+                        <span class="text-danger"></span>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="button-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button id="button-add" type="button" class="btn btn-primary">Add contact</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
-
-
-<!-- Modal delete-->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete contact</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h3>Are your sure to delete this contact?</h3>
-            </div>
-             <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button id="button-delete" type="button" class="btn btn-primary">Delete</button>
-            </div> 
-        </div>
-    </div>
-</div>
+</div> 
 
 
 <!-- Modal edit -->
@@ -112,48 +92,54 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Update" id="form-edit" method="post">
-                    <input class="contactId" type="hidden" asp-for="Contact.Id" />
+                <form  id="form-edit" method="post">
+                    <input id="contact-id" type="hidden" asp-for="Contact.Id" />
                     <div class="form-group">
                         <label asp-for="Contact.Name" class="control-label"></label>
-                        <input id="contact-name" asp-for="Contact.Name" class="form-control" />
-                        <span asp-validation-for="Contact.Name" class="text-danger"></span>
+                        <input id="contact-name" asp-for="Contact.Name" class="form-control contact-name" />
+                        <span  class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Contact.MobilePhone" class="control-label"></label>
-                        <input id="contact-mobilePhone" asp-for="Contact.MobilePhone" class="form-control" />
-                        <span asp-validation-for="Contact.MobilePhone" class="text-danger"></span>
+                        <input id="contact-mobilePhone" asp-for="Contact.MobilePhone" class="form-control contact-phone" />
+                        <span  class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Contact.JobTitle" class="control-label"></label>
-                        <input id="contact-jobTitle" asp-for="Contact.JobTitle" class="form-control" />
-                        <span asp-validation-for="Contact.JobTitle" class="text-danger"></span>
+                        <input id="contact-jobTitle" asp-for="Contact.JobTitle" class="form-control contact-job-title" />
+                        <span  class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Contact.BirthDate" class="control-label"></label>
-                        <input id="contact-birthDate" type="date" asp-for="Contact.BirthDate" class="form-control" />
-                        <span asp-validation-for="Contact.BirthDate" class="text-danger"></span>
+                        <input id="contact-birthDate" type="date" asp-for="Contact.BirthDate" class="form-control contact-birth-date" />
+                        <span  class="text-danger"></span>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button id="button-edit" type="submit" class="btn btn-primary">Save changes</button>
+                        <button id="button-close" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="button-edit" class="btn btn-primary">Save changes</button>
                     </div>
                 </form>
             </div>
            
         </div>
     </div>
-</div>
-
-<input id="ContactId" type="hidden"/>
+</div> 
 
 @section Scripts{
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="~/lib/jquery-inputmask/jquery.inputmask.min.js"></script>
     <script>
         $(document).ready(function () {
+
+            $(".contact-phone").inputmask({"mask": "+375 (99) 999-99-99"});
+
             $("#button-add").click(function () {
+                const addForm = $("#form-add");
+                if (!isValidInputs(addForm))
+                    return;
+
                 var contactForm = $("#form-add").serialize();
 
                 $.ajax({
@@ -166,46 +152,88 @@
                 });
             });
 
-            $("#button-delete").click(function () {
-                var contactId = $("#ContactId").val();
+            $("#button-edit").click(function (event) {
+                var editForm = $("#form-edit");
+                if (!isValidInputs(editForm)){
+                    event.preventDefault();
+                    return;
+                }    
+
+                var contactForm = $("#form-edit").serialize();
 
                 $.ajax({
                     type: "POST",
-                    url: "/Contact/Delete",
-                    data: { id: contactId },
-                    success: function (result) {
-                        if (result) {
-                            $("#ContactId").val(null);
-                            window.location.href = "/Contact/Index";
-                        } else {
-                            alert("Something gone wrong");
-                        }
+                    url: "/Contact/Update",
+                    cache: false,
+                    data: contactForm,
+                    success: function () {
+                        window.location.href = "/Contact/Index";
                     }
                 });
             });
+
+            $('#addModal, #editModal').on('hidden.bs.modal', function () {
+                $(this).find('input').val('');
+                $(this).find('.text-danger').text('');
+            });
+
+            const isValidInputs = (form) => {
+                const name = form.find(".contact-name");
+                const phone = form.find(".contact-phone");
+                const jobTitle = form.find(".contact-job-title");
+                const birthDate = form.find(".contact-birth-date");
+
+                const inputs = [name, phone, jobTitle, birthDate];
+
+                let isValid = true;
+
+                inputs.forEach((input) => {
+                    const formControl = input.parent();
+                    const formError = formControl.find(".text-danger");
+                    if (input.val() == '') {
+                        formError.text("This field is required");
+                        isValid = false;
+                    } else if (input == name && (input.val().length < 3 || input.val().length > 15)) {
+                        formError.text("This field must be between 3 and 15");
+                        isValid = false;
+                    }
+                    else
+                        formError.text("");
+
+                })
+                return isValid;
+            };
+
         });
 
-        var Confirm = function (id) {
-            $("#ContactId").val(id);
-            $("#deleteModal").modal('show');
-        };
-
-        var EditForm = function (id) {
-            $.ajax({
+        var editForm = function (id) {
+            $.ajax({  
                 type: "POST",
                 url: "/Contact/GetContact",
                 data: { id: id },
                 success: function (c) {
                     $("#editModal").modal('show');
+                    $("#contact-id").val(c.id);
                     $("#contact-name").val(c.name);
                     $("#contact-mobilePhone").val(c.mobilePhone);
-                    $("#contact-jobTitle").val(c.jobTitle)
-                    ;
-                    var birthDate = new Date(c.birthDate);
-                    var formattedBirthDate = birthDate.toISOString().split('T')[0];
+                    $("#contact-jobTitle").val(c.jobTitle);
+                    formattedBirthDate = c.birthDate.split('T')[0];        
                     $("#contact-birthDate").val(formattedBirthDate);
+                }
+            });
+        };
 
-                    $(".contactId").val(c.id)
+        var deleteField = function (id) {
+            $.ajax({
+                type: "POST",
+                url: "/Contact/Delete",
+                data: { id: id },
+                success: function (result) {
+                    if (result) {
+                        window.location.href = "/Contact/Index";
+                    } else {
+                        alert("Something gone wrong");
+                    }
                 }
             });
         };

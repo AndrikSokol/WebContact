@@ -15,12 +15,12 @@ namespace WebContact.Repository
         }
         public async Task<IEnumerable<Contact>> GetAllAsync()
         {
-            return await _context.Contact.ToListAsync();
+            return  await _context.Contact.ToListAsync();
         }
 
-        public Task<Contact> GetByIdAsync(int id)
+        public async Task<Contact> GetByIdAsync(int id)
         {
-            return _context.Contact.FirstOrDefaultAsync(contact => contact.Id == id);
+            return await _context.Contact.FirstAsync(c => c.Id == id);
         }
 
         public bool Add(Contact contact)
@@ -34,12 +34,11 @@ namespace WebContact.Repository
             _context.Remove(contact);
             return Save();
         }
-
        
 
         public bool Save()
         {
-            var saved = _context.SaveChanges();
+            var saved =  _context.SaveChanges();
             return saved>0 ? true : false;
         }
 
